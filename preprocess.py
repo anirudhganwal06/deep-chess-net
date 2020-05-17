@@ -70,8 +70,46 @@ def pgn2fen(game):
         moves.append(move)
         positions.append(position)
         node = nextNode
+
     return positions, moves
 
 
-
-
+def fen2bitboard(fen):
+    """
+    Returns bitboard [np array of shape(1, 773)] from fen
+    Input:
+        fen: A chessboard position[FEN]
+    Output:
+        bitboard: A chessboard position [bitboard - np array of shape(1, 773)]
+    """
+    mapping = {
+        'p': 0,
+        'n': 1,
+        'b': 2,
+        'r': 3,
+        'q': 4,
+        'k': 5,
+        'P': 6,
+        'N': 7,
+        'B': 8,
+        'R': 9,
+        'Q': 10,
+        'K': 11
+    }
+    bitboard = np.zeros((1, 773), dtype=int)
+    currIndex = 0
+    [position, turn, castling, _, _, _] = fen.split(' ')
+    for ch in position:
+        if ch == '/':
+            continue
+        elif ch >= '1' and ch <= '8':
+            currIndex += (ord(ch) - ord('0')) * 12
+        else:
+            bitboard[0, currIndex + mapping[ch]] = 1
+            currIndex += 12
+    bitboard[0, 768] = 1 if turn == 'w' else 0
+    bitboard[0, 769] = 1 if 'K' in castling else 0
+    bitboard[0, 770] = 1 if 'Q' in castling else 0
+    bitboard[0, 771] = 1 if 'k' in castling else 0
+    bitboard[0, 772] = 1 if 'q' in castling else 0
+    return bitboard
