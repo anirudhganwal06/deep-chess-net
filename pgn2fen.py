@@ -32,7 +32,19 @@ def choosePositions(positions, moves, nExcludeStarting = 5, nPositions = 10):
     return chosenPositions
 
 
-
+def winner(game):
+    """
+    Returns who is the winner, if draw return 'd'
+    Inputs:
+        game: A chess game in PGN format
+    Outputs:
+        winner: White('w') / Black('b') / Draw('d')
+    """
+    if game.headers['Result'] == '1-0':
+        return 'w'
+    elif game.headers['Result'] == '0-1':
+        return 'b'
+    return 'd'
 
 
 
