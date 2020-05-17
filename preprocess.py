@@ -35,8 +35,9 @@ def choosePositions(positions, moves, nExcludeStarting = 5, nPositions = 10):
 def winner(game):
     """
     Returns who is the winner, if draw return 'd'
+    
     Inputs:
-        game: A chess game in PGN format
+        game: A chess game[PGN]
     Outputs:
         winner: White('w') / Black('b') / Draw('d')
     """
@@ -45,6 +46,31 @@ def winner(game):
     elif game.headers['Result'] == '0-1':
         return 'b'
     return 'd'
+
+
+def pgn2fen(game):
+    """
+    Returns all positions[FEN] and moves[SAN] from game[PGN]
+    
+    Inputs:
+        game: A chess game[PGN]
+    Outputs:
+        positions: All positions of game[List of FEN]
+        moves: All moves that led to the positions[List of SAN]
+    """
+    node = game
+    positions = []
+    moves = []
+    
+    # All positions and moves until the game ends
+    while not node.is_end():
+        nextNode = node.variation(0)
+        move = node.board().san(nextNode.move)
+        position = nextNode.board().fen()
+        moves.append(move)
+        positions.append(position)
+        node = nextNode
+    return positions, moves
 
 
 
