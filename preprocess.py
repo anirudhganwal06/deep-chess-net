@@ -5,6 +5,7 @@ import numpy as np
 import chess 
 import chess.pgn
 import random
+import h5py
 
 
 def choosePositions(positions, moves, nExcludeStarting = 5, nPositions = 10):
@@ -113,3 +114,14 @@ def fen2bitboard(fen):
     bitboard[0, 771] = 1 if 'k' in castling else 0
     bitboard[0, 772] = 1 if 'q' in castling else 0
     return bitboard
+
+
+def createHDF5(filePath):
+    """
+    Creates a .h5 file for storing processed bitboards with labels
+    Inputs:
+        filePath: the path with file name to which processed data will be saved
+    """
+    with h5py.File(filePath, 'a') as file:
+        file.create_dataset('bitboards', shape=(0, 773), maxshape = (None, 773))
+        file.create_dataset('labels', shape=(0, 1), maxshape = (None, 1))
