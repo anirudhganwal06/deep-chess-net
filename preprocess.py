@@ -116,12 +116,16 @@ def fen2bitboard(fen):
     return bitboard
 
 
-def createHDF5(filePath):
+def saveData(filePath, bitboards, labels):
     """
-    Creates a .h5 file for storing processed bitboards with labels
+    Save data to a .h5 file
     Inputs:
         filePath: the path with file name to which processed data will be saved
+        bitboards: np array of processed bitboards
+        labels: np array of processed labels
     """
-    with h5py.File(filePath, 'a') as file:
-        file.create_dataset('bitboards', shape=(0, 773), maxshape = (None, 773))
-        file.create_dataset('labels', shape=(0, 1), maxshape = (None, 1))
+    with h5py.File(filePath, 'w') as file:
+        print(f'Bitboards shape: {bitboards.shape}')
+        print(f'Labels shape: {labels.shape}')
+        file.create_dataset('bitboards', data = bitboards, maxshape = (None, 773))
+        file.create_dataset('labels', data = labels, maxshape = (None, 1))
