@@ -78,6 +78,7 @@ def pgn2fen(game):
 def fen2bitboard(fen):
     """
     Returns bitboard [np array of shape(1, 773)] from fen
+    
     Input:
         fen: A chessboard position[FEN]
     Output:
@@ -119,6 +120,7 @@ def fen2bitboard(fen):
 def saveData(filePath, bitboards, labels):
     """
     Save data to a .h5 file
+    
     Inputs:
         filePath: the path with file name to which processed data will be saved
         bitboards: np array of processed bitboards
@@ -129,3 +131,39 @@ def saveData(filePath, bitboards, labels):
         print(f'Labels shape: {labels.shape}')
         file.create_dataset('bitboards', data = bitboards, maxshape = (None, 773))
         file.create_dataset('labels', data = labels, maxshape = (None, 1))
+
+
+def iterateOverAllGames(pgnFilePath):
+    """
+    Iterate over all games of pgnFile and returns some good positions from those games
+    
+    Inputs:
+        pgnFilePath: path of the file where pgn games are stored
+    Outputs:
+        bitboards: chessboard positions [np array of shape(None, 773)]
+        labels: labels of corresponding bitboards - winner [np array of shape(None, 1)]
+    """
+    pgnFile = open(pgnFilePath)
+    game = chess.pgn.read_game(pgnFile)
+    bitboards = np.ndarray((0, 773))
+    labels = np.ndarray((0, 1))
+    count = 0
+    
+    while game is not None:
+        win = winner(game)
+        if win in ['w', 'b']:
+            positions, moves = pgn2fen(game)
+            positions = choosePositions(positions, moves)
+            for position in positions:
+                bitboard = fen2bitboard(position)
+                label = 1 if win == 'w' else 0
+                label = np.array([[label]])
+                bitboards = np.append(bitboards, bitboard, axis = 0)
+                labels = np.append(labels, label, axis = 0)
+                count += 1
+                if count % 100 == 0:            
+                    print(f'{count} positions processed')
+            
+        game = chess.pgn.read_game(pgnFile)   
+    print(f'{count} positions processed')
+    return bitboards, labels
