@@ -28,7 +28,8 @@ def choosePositions(positions, moves, nExcludeStarting = 5, nPositions = 10):
     chosenPositions = [chosenPositions[i] for i in range(len(chosenMoves)) if 'x' not in chosenMoves[i]]
     
     # Select nPositions random positions from chosenPositions
-    chosenPositions = random.sample(chosenPositions, k = nPositions)
+    if len(chosenPositions) > nPositions:
+        chosenPositions = random.sample(chosenPositions, k = nPositions)
     
     return chosenPositions
 
@@ -71,7 +72,7 @@ def pgn2fen(game):
         moves.append(move)
         positions.append(position)
         node = nextNode
-
+        
     return positions, moves
 
 
@@ -149,6 +150,7 @@ def iterateOverAllGames(pgnFilePath):
     labels = np.ndarray((0, 1))
     count = 0
     
+    
     while game is not None:
         win = winner(game)
         if win in ['w', 'b']:
@@ -162,8 +164,18 @@ def iterateOverAllGames(pgnFilePath):
                 labels = np.append(labels, label, axis = 0)
                 count += 1
                 if count % 100 == 0:            
-                    print(f'{count} positions processed')
-            
+                    appendDataToH5File('./datasets/processed1.h5', bitboards, labels)
+                    print(f'{count} positions saved')
+                    bitboards = bitboards[100:]
+                    labels = labels[100:]
+                    
         game = chess.pgn.read_game(pgnFile)   
-    print(f'{count} positions processed')
+    appendDataToH5File('./datasets/processed1.h5', bitboards, labels)
+    print(f'{count} positions saved')
     return bitboards, labels
+
+
+def createH5File(filePath):
+    with h5py.File(filePath, 'a') as file:
+        file.create_dataset('bitboards', shape=(0, 773), maxshape=(None, 773))
+        file.create_dataset('labels', shape=(0, 1), maxshape=(None, 1))
