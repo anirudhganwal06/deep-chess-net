@@ -179,3 +179,12 @@ def createH5File(filePath):
     with h5py.File(filePath, 'a') as file:
         file.create_dataset('bitboards', shape=(0, 773), maxshape=(None, 773))
         file.create_dataset('labels', shape=(0, 1), maxshape=(None, 1))
+
+
+def appendDataToH5File(filePath, bitboards, labels):
+    with h5py.File(filePath, 'a') as file:
+        file['bitboards'].resize(file['bitboards'].shape[0] + bitboards.shape[0], axis = 0)
+        file['bitboards'][-bitboards.shape[0]:] = bitboards
+        
+        file['labels'].resize(file['labels'].shape[0] + labels.shape[0], axis = 0)
+        file['labels'][-labels.shape[0]:] = labels
