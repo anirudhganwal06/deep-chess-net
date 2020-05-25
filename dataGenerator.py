@@ -17,3 +17,9 @@ class DataGenerator(keras.utils.Sequence):
         self.size = size
         self.batchSize = batchSize
         self.shuffle = shuffle
+        
+    def __len__(self):
+        """
+        Calculates the number of batches per epoch
+        """
+        return self.size // batchSize
