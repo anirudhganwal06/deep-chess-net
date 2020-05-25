@@ -17,6 +17,7 @@ class DataGenerator(keras.utils.Sequence):
         self.size = size
         self.batchSize = batchSize
         self.shuffle = shuffle
+        self.onEpochEnd()
         
     def __len__(self):
         """
@@ -32,3 +33,12 @@ class DataGenerator(keras.utils.Sequence):
             batchBitboards = file['bitboards'][index * self.batchSize : (index + 1) * self.batchSize]
             batchLabels = file['labels'][index * self.batchSize : (index + 1) * self.batchSize]
             return batchBitboards, batchLabels
+    
+    def onEpochEnd(self):
+        self.indexes = np.arange(size)
+        if self.shuffle:
+            np.random.shuffle(self.indexes)
+
+
+
+
