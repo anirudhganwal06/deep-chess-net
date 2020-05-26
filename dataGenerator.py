@@ -23,19 +23,19 @@ class DataGenerator(keras.utils.Sequence):
         """
         Calculates the number of batches per epoch
         """
-        return self.size // batchSize
+        return self.size // self.batchSize
         
     def __getitem__(self, index):
         """
         Generate one batch of data
         """
-        with h5py.File(self.filePath, 'r'):
+        with h5py.File(self.filePath, 'r') as file:
             batchBitboards = file['bitboards'][index * self.batchSize : (index + 1) * self.batchSize]
             batchLabels = file['labels'][index * self.batchSize : (index + 1) * self.batchSize]
-            return batchBitboards, batchLabels
+            return batchBitboards, batchBitboards
     
     def onEpochEnd(self):
-        self.indexes = np.arange(size)
+        self.indexes = np.arange(self.size)
         if self.shuffle:
             np.random.shuffle(self.indexes)
 
